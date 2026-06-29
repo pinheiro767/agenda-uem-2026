@@ -1,130 +1,194 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#6c63ff" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Agenda PWA" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <title>Agenda Virtual Imersiva PWA</title>
-  <style>
-    :root{
-      --bg1:#f6f7ff; --bg2:#eaf7ff; --card:#ffffff; --text:#172033; --muted:#5c6475;
-      --primary:#6c63ff; --primary2:#00bcd4; --accent:#ff7ab6; --success:#16a34a;
-      --shadow:0 18px 45px rgba(34,45,90,.16); --radius:24px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--text);
-      background:radial-gradient(circle at top left,rgba(108,99,255,.28),transparent 35%),
-      radial-gradient(circle at top right,rgba(0,188,212,.22),transparent 35%),
-      linear-gradient(135deg,var(--bg1),var(--bg2)); min-height:100vh;
-    }
-    header{padding:24px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
-    .title-box,.calendar-wrap,.panel{background:rgba(255,255,255,.75);backdrop-filter:blur(14px);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.7)}
-    .title-box{padding:20px 24px}
-    h1{margin:0;font-size:clamp(1.8rem,4vw,3rem);line-height:1.05}
-    .subtitle{margin-top:8px;color:var(--muted);font-size:1.05rem}
-    .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-    select,button,input,textarea{font:inherit}
-    select,.soft-btn{border:0;border-radius:18px;padding:14px 18px;background:#fff;box-shadow:0 8px 22px rgba(20,30,70,.12);min-height:54px}
-    .soft-btn{cursor:pointer;font-weight:800;color:var(--text);transition:.18s}
-    .soft-btn:hover{transform:translateY(-2px)}
-    .soft-btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white}
-    main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;padding:0 24px 28px}
-    .calendar-wrap{padding:20px;overflow:hidden}
-    .months{display:grid;grid-template-columns:repeat(3,minmax(230px,1fr));gap:16px}
-    .month{background:var(--card);border-radius:22px;padding:14px;box-shadow:0 10px 25px rgba(28,37,76,.1);min-width:0}
-    .month h2{margin:0 0 10px;font-size:1.2rem;display:flex;justify-content:space-between;align-items:center}
-    .month-badge{font-size:.8rem;color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary));padding:6px 10px;border-radius:999px}
-    .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .weekdays div{text-align:center;font-size:.78rem;font-weight:800;color:var(--muted);padding:4px 0}
-    .day{aspect-ratio:1/1;border:0;border-radius:14px;background:#f4f6ff;color:var(--text);cursor:pointer;font-weight:800;position:relative;transition:.15s}
-    .day:hover{transform:scale(1.06);background:#e7ebff}
-    .day.today{outline:3px solid var(--primary);background:#fff}
-    .day.has-event::after{content:"";position:absolute;bottom:6px;left:50%;width:8px;height:8px;border-radius:50%;background:var(--accent);transform:translateX(-50%)}
-    .empty{visibility:hidden}
-    aside{display:flex;flex-direction:column;gap:18px}
-    .panel{padding:18px}
-    .panel h2{margin:0 0 12px;font-size:1.35rem}
-    .selected-date{font-weight:900;color:var(--primary);margin-bottom:10px}
-    label{display:block;font-weight:800;margin:12px 0 6px}
-    input,textarea{width:100%;border:2px solid #e5e7f2;border-radius:16px;padding:13px;background:#fff;outline:none;font-size:1rem}
-    textarea{min-height:90px;resize:vertical}
-    input:focus,textarea:focus{border-color:var(--primary)}
-    .event-list{display:flex;flex-direction:column;gap:10px;margin-top:14px;max-height:280px;overflow:auto;padding-right:4px}
-    .event{background:linear-gradient(135deg,#fff,#f2f7ff);border-left:6px solid var(--primary);padding:12px;border-radius:16px;box-shadow:0 8px 16px rgba(20,30,70,.08)}
-    .event strong{display:block}.event small{color:var(--muted)}.event p{margin:6px 0 0}
-    .event-actions{display:flex;gap:8px;margin-top:8px}
-    .tiny{border:0;border-radius:12px;padding:8px 10px;cursor:pointer;font-weight:800;background:#eef2ff}
-    .tiny.delete{background:#fee2e2;color:#991b1b}
-    .calc-display{width:100%;min-height:60px;border-radius:18px;border:0;padding:12px;font-size:1.6rem;text-align:right;background:#172033;color:#fff;margin-bottom:12px}
-    .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-    .calc-grid button{min-height:58px;border:0;border-radius:16px;background:#f1f5ff;font-weight:900;font-size:1.1rem;cursor:pointer}
-    .calc-grid button.op{background:#dbeafe;color:#1d4ed8}
-    .calc-grid button.equal{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;grid-column:span 2}
-    .calc-grid button.clear{background:#fee2e2;color:#991b1b}
-    .install-box{display:none;margin-top:12px;padding:12px;border-radius:16px;background:#eef2ff;color:#1e1b4b;font-weight:800}
-    .footer-note{color:var(--muted);font-size:.92rem;text-align:center;padding:6px 20px 20px}
-    @media(max-width:1100px){main{grid-template-columns:1fr}aside{grid-template-columns:1fr 1fr;display:grid}.months{grid-template-columns:repeat(2,minmax(230px,1fr))}}
-    @media(max-width:720px){header{padding:14px}main{padding:0 14px 20px}.months{grid-template-columns:1fr}aside{display:flex}.toolbar{width:100%}select,.soft-btn{flex:1}.calendar-wrap{padding:12px}}
-    .dark{--bg1:#111827;--bg2:#1e1b4b;--card:#1f2937;--text:#f9fafb;--muted:#cbd5e1}
-    .dark .title-box,.dark .calendar-wrap,.dark .panel{background:rgba(17,24,39,.78);border-color:rgba(255,255,255,.12)}
-    .dark .day{background:#374151;color:#fff}.dark .day:hover{background:#4b5563}
-    .dark input,.dark textarea,.dark select,.dark .soft-btn{background:#111827;color:#fff;border-color:#374151}
-    .dark .event{background:linear-gradient(135deg,#111827,#1f2937)}
-    .dark .install-box{background:#312e81;color:#fff}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6c63ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Agenda 3D com Robô Assistente</title>
+<style>
+:root{
+  --bg:#120f2d; --bg2:#241057; --glass:rgba(255,255,255,.13); --glass2:rgba(255,255,255,.2);
+  --text:#fff; --muted:#d9d8ff; --primary:#7c5cff; --cyan:#00d4ff; --pink:#ff75bd;
+  --gold:#ffdd57; --green:#51f28a; --danger:#ff6b6b; --card:#fff; --ink:#19172e;
+  --shadow:0 22px 60px rgba(0,0,0,.38); --radius:30px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(0,212,255,.35), transparent 26%),
+    radial-gradient(circle at 84% 6%, rgba(255,117,189,.33), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgba(124,92,255,.42), transparent 34%),
+    linear-gradient(135deg,var(--bg),var(--bg2));
+  overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:42px 42px; mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);
+}
+header{padding:22px; display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center}
+.hero,.panel,.calendar-wrap{
+  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.22); border-radius:var(--radius);
+  box-shadow:var(--shadow); backdrop-filter:blur(18px);
+}
+.hero{padding:24px; position:relative; overflow:hidden}
+.hero::after{
+  content:""; position:absolute; width:260px; height:260px; border-radius:50%;
+  right:-80px; top:-120px; background:radial-gradient(circle,var(--cyan),transparent 65%); opacity:.45;
+}
+h1{margin:0;font-size:clamp(2rem,4vw,4rem);line-height:1.02;text-shadow:0 8px 22px rgba(0,0,0,.26)}
+.subtitle{color:var(--muted);margin-top:10px;font-size:1.08rem;max-width:900px}
+.top-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.btn3d,select{
+  border:0; min-height:58px; border-radius:20px; padding:14px 18px; font-weight:900; cursor:pointer;
+  color:white; background:linear-gradient(145deg,#8a75ff,#4a39d4);
+  box-shadow:0 12px 0 #2a217d, 0 20px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.42);
+  transform:translateY(0); transition:.12s;
+}
+.btn3d:active{transform:translateY(8px);box-shadow:0 4px 0 #2a217d,0 12px 18px rgba(0,0,0,.22)}
+.btn3d.cyan{background:linear-gradient(145deg,#35e8ff,#008bc8);box-shadow:0 12px 0 #005d85,0 20px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.42)}
+.btn3d.pink{background:linear-gradient(145deg,#ff95ce,#d92e8a);box-shadow:0 12px 0 #861850,0 20px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.42)}
+.btn3d.gold{background:linear-gradient(145deg,#ffe985,#f5a300);color:#2f2100;box-shadow:0 12px 0 #9b6500,0 20px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.55)}
+select{background:linear-gradient(145deg,#ffffff,#dfe5ff);color:#1d1748;box-shadow:0 12px 0 #aeb8ea,0 20px 30px rgba(0,0,0,.24)}
+main{display:grid; grid-template-columns:minmax(0,1fr) 410px; gap:18px; padding:0 22px 24px}
+.calendar-wrap{padding:18px}
+.months{display:grid; grid-template-columns:repeat(3,minmax(230px,1fr)); gap:14px}
+.month{
+  color:var(--ink); background:linear-gradient(145deg,#fff,#e9eeff); border-radius:24px; padding:13px;
+  box-shadow:0 16px 0 #c9d2ff, 0 26px 35px rgba(0,0,0,.19);
+}
+.month h2{margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; font-size:1.12rem}
+.badge{font-size:.75rem;color:#fff;background:linear-gradient(135deg,var(--primary),var(--pink));padding:6px 10px;border-radius:999px}
+.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.weekdays div{text-align:center;color:#59607a;font-weight:900;font-size:.75rem}
+.day{
+  aspect-ratio:1/1;border:0;border-radius:14px;background:linear-gradient(145deg,#fff,#dce6ff); color:#17172a;
+  font-weight:950; cursor:pointer; position:relative;
+  box-shadow:0 6px 0 #bdc9f2,0 10px 14px rgba(0,0,0,.12);
+}
+.day:active{transform:translateY(4px);box-shadow:0 2px 0 #bdc9f2}
+.day.today{outline:3px solid var(--pink);background:linear-gradient(145deg,#fff,#ffe2f3)}
+.day.has-event::after{content:"";position:absolute;bottom:5px;left:50%;width:9px;height:9px;border-radius:50%;background:var(--pink);transform:translateX(-50%);box-shadow:0 0 12px var(--pink)}
+.empty{visibility:hidden}
+.side{display:flex;flex-direction:column;gap:18px}
+.panel{padding:18px}
+.panel h2{margin:0 0 12px;font-size:1.35rem}
+input,textarea{
+  width:100%;border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:14px;
+  background:rgba(255,255,255,.92);color:#15152b;font:inherit;outline:none;
+}
+textarea{min-height:86px;resize:vertical}
+label{display:block;font-weight:900;margin:10px 0 6px}
+.selected{color:var(--gold);font-weight:950;margin-bottom:8px}
+.event-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:250px;overflow:auto}
+.event{
+  background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(225,236,255,.94));color:#16172c;border-radius:20px;padding:13px;
+  border-left:7px solid var(--cyan);box-shadow:0 10px 20px rgba(0,0,0,.18)
+}
+.event small{color:#51576d}.event p{margin:6px 0 0}
+.tiny{border:0;border-radius:13px;padding:8px 10px;font-weight:900;cursor:pointer;margin-top:8px;background:#ffe1e1;color:#8c1111}
+.calc-display{font-size:1.7rem;text-align:right;background:#070718;color:#fff;border:1px solid rgba(255,255,255,.18);min-height:64px;margin-bottom:12px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.calc-grid button{
+  min-height:58px;border:0;border-radius:18px;font-size:1.15rem;font-weight:950;cursor:pointer;
+  background:linear-gradient(145deg,#fff,#dbe6ff);box-shadow:0 7px 0 #aebde8;color:#16172c;
+}
+.calc-grid button:active{transform:translateY(4px);box-shadow:0 3px 0 #aebde8}
+.calc-grid .op{background:linear-gradient(145deg,#7ef0ff,#00a1da);box-shadow:0 7px 0 #00658b;color:#002235}
+.calc-grid .clear{background:linear-gradient(145deg,#ffb1b1,#ff5d5d);box-shadow:0 7px 0 #9d2222;color:#fff}
+.calc-grid .equal{grid-column:span 2;background:linear-gradient(145deg,#fff07d,#ffb300);box-shadow:0 7px 0 #9b6500;color:#2f2100}
+.robot-card{position:relative;overflow:hidden}
+.robot-head{
+  width:112px;height:92px;margin:4px auto 10px;border-radius:32px;background:linear-gradient(145deg,#fff,#cddaff);
+  box-shadow:0 14px 0 #8d9bd8,0 25px 32px rgba(0,0,0,.26);position:relative;
+}
+.robot-head::before{content:"";position:absolute;width:10px;height:28px;background:#fff;left:50%;top:-28px;transform:translateX(-50%);border-radius:9px}
+.robot-head::after{content:"";position:absolute;width:24px;height:24px;background:var(--gold);left:50%;top:-42px;transform:translateX(-50%);border-radius:50%;box-shadow:0 0 22px var(--gold)}
+.eye{position:absolute;top:34px;width:18px;height:18px;background:#18133f;border-radius:50%;box-shadow:0 0 12px var(--cyan)}
+.eye.left{left:30px}.eye.right{right:30px}
+.mouth{position:absolute;left:39px;top:58px;width:34px;height:14px;border-bottom:5px solid #18133f;border-radius:0 0 30px 30px}
+.chatbox{
+  background:rgba(6,8,25,.58);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:12px;
+  height:240px;overflow:auto;display:flex;flex-direction:column;gap:10px
+}
+.msg{padding:10px 12px;border-radius:16px;max-width:92%;line-height:1.35}
+.bot{background:rgba(255,255,255,.16);align-self:flex-start}
+.user{background:linear-gradient(135deg,var(--primary),var(--pink));align-self:flex-end}
+.chat-row{display:flex;gap:8px;margin-top:10px}
+.chat-row input{background:#fff;color:#111;min-width:0}
+.chat-row button{min-width:76px}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.quick button{font-size:.86rem;min-height:42px;padding:9px 11px;border-radius:16px}
+.notice{font-size:.82rem;color:var(--muted);margin-top:10px;line-height:1.3}
+@media(max-width:1180px){main{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.months{grid-template-columns:repeat(2,minmax(230px,1fr))}.robot-card{grid-column:1/-1}}
+@media(max-width:760px){header{grid-template-columns:1fr;padding:14px}.top-actions{justify-content:stretch}.top-actions>*{flex:1}main{padding:0 14px 20px}.months{grid-template-columns:1fr}.side{display:flex}.month{box-shadow:0 10px 0 #c9d2ff,0 18px 25px rgba(0,0,0,.18)}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="title-box">
-      <h1>Agenda Virtual Imersiva</h1>
-      <div class="subtitle">PWA instalável com calendário anual, atividades, reuniões e calculadora.</div>
-      <div id="installBox" class="install-box">
-        App pronto para instalar. Use “Adicionar à tela inicial” no tablet.
+<header>
+  <section class="hero">
+    <h1>Agenda 3D com Robô Assistente</h1>
+    <div class="subtitle">Calendário anual, atividades, reuniões, calculadora e conversa acolhedora para organizar seu dia.</div>
+  </section>
+  <section class="top-actions">
+    <select id="yearSelect"></select>
+    <button class="btn3d cyan" onclick="goToday()">Hoje</button>
+    <button class="btn3d pink" onclick="installHint()">Instalar</button>
+  </section>
+</header>
+
+<main>
+  <section class="calendar-wrap"><div id="months" class="months"></div></section>
+
+  <aside class="side">
+    <section class="panel">
+      <h2>📝 Atividade / Reunião</h2>
+      <div class="selected" id="selectedDateText">Selecione um dia</div>
+      <label>Título</label><input id="eventTitle" placeholder="Ex.: reunião, aula, prazo...">
+      <label>Horário</label><input id="eventTime" type="time">
+      <label>Observações</label><textarea id="eventNotes" placeholder="Detalhes importantes..."></textarea>
+      <button class="btn3d gold" style="width:100%;margin-top:12px" onclick="saveEvent()">Salvar no calendário</button>
+      <div id="eventList" class="event-list"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🧮 Calculadora</h2>
+      <input class="calc-display" id="calcDisplay" readonly value="0">
+      <div class="calc-grid">
+        <button class="clear" onclick="calcClear()">C</button><button onclick="calcBack()">⌫</button><button class="op" onclick="calcPress('%')">%</button><button class="op" onclick="calcPress('/')">÷</button>
+        <button onclick="calcPress('7')">7</button><button onclick="calcPress('8')">8</button><button onclick="calcPress('9')">9</button><button class="op" onclick="calcPress('*')">×</button>
+        <button onclick="calcPress('4')">4</button><button onclick="calcPress('5')">5</button><button onclick="calcPress('6')">6</button><button class="op" onclick="calcPress('-')">−</button>
+        <button onclick="calcPress('1')">1</button><button onclick="calcPress('2')">2</button><button onclick="calcPress('3')">3</button><button class="op" onclick="calcPress('+')">+</button>
+        <button onclick="calcPress('0')">0</button><button onclick="calcPress('.')">,</button><button class="equal" onclick="calcEqual()">=</button>
       </div>
-    </div>
-    <div class="toolbar">
-      <select id="yearSelect" aria-label="Selecionar ano"></select>
-      <button class="soft-btn primary" onclick="goToday()">Hoje</button>
-      <button class="soft-btn" onclick="toggleDark()">Claro/Escuro</button>
-    </div>
-  </header>
+    </section>
 
-  <main>
-    <section class="calendar-wrap"><div id="months" class="months"></div></section>
-    <aside>
-      <section class="panel">
-        <h2>📝 Minha atividade</h2>
-        <div class="selected-date" id="selectedDateText">Selecione um dia</div>
-        <label for="eventTitle">Título</label>
-        <input id="eventTitle" placeholder="Ex.: Reunião, aula, consulta..." />
-        <label for="eventTime">Horário</label>
-        <input id="eventTime" type="time" />
-        <label for="eventNotes">Observações</label>
-        <textarea id="eventNotes" placeholder="Digite detalhes importantes..."></textarea>
-        <button class="soft-btn primary" style="width:100%;margin-top:12px" onclick="saveEvent()">Salvar atividade</button>
-        <div class="event-list" id="eventList"></div>
-      </section>
-
-      <section class="panel">
-        <h2>🧮 Calculadora</h2>
-        <input class="calc-display" id="calcDisplay" readonly value="0" />
-        <div class="calc-grid">
-          <button class="clear" onclick="calcClear()">C</button><button onclick="calcBack()">⌫</button><button class="op" onclick="calcPress('%')">%</button><button class="op" onclick="calcPress('/')">÷</button>
-          <button onclick="calcPress('7')">7</button><button onclick="calcPress('8')">8</button><button onclick="calcPress('9')">9</button><button class="op" onclick="calcPress('*')">×</button>
-          <button onclick="calcPress('4')">4</button><button onclick="calcPress('5')">5</button><button onclick="calcPress('6')">6</button><button class="op" onclick="calcPress('-')">−</button>
-          <button onclick="calcPress('1')">1</button><button onclick="calcPress('2')">2</button><button onclick="calcPress('3')">3</button><button class="op" onclick="calcPress('+')">+</button>
-          <button onclick="calcPress('0')">0</button><button onclick="calcPress('.')">,</button><button class="equal" onclick="calcEqual()">=</button>
-        </div>
-      </section>
-    </aside>
-  </main>
-  <div class="footer-note">Funciona offline depois do primeiro acesso. Os dados ficam salvos no próprio tablet.</div>
+    <section class="panel robot-card">
+      <h2>🤖 Robô do Dia</h2>
+      <div class="robot-head"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
+      <div class="chatbox" id="chatbox"></div>
+      <div class="quick">
+        <button class="btn3d cyan" onclick="quickChat('Como organizar meu dia?')">Organizar dia</button>
+        <button class="btn3d pink" onclick="quickChat('Analise um comportamento')">Comportamento</button>
+        <button class="btn3d gold" onclick="quickChat('Quero uma reflexão espírita')">Reflexão</button>
+        <button class="btn3d" onclick="quickChat('Tenho dúvida jurídica')">Direito</button>
+      </div>
+      <div class="chat-row">
+        <input id="chatInput" placeholder="Conte como foi seu dia...">
+        <button class="btn3d cyan" onclick="sendChat()">Enviar</button>
+      </div>
+      <div class="notice">
+        O robô é uma ajuda local e educativa. Ele apoia você, mas não substitui advogado, psicólogo, médico ou orientação espiritual formal.
+      </div>
+    </section>
+  </aside>
+</main>
 
 <script>
 const monthNames=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -133,73 +197,84 @@ const monthsEl=document.getElementById("months"),yearSelect=document.getElementB
 let currentYear=new Date().getFullYear(),selectedDate=formatDate(new Date());
 
 function formatDate(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
-function niceDate(dateStr){const[y,m,d]=dateStr.split("-");return `${d}/${m}/${y}`}
-function eventKey(dateStr){return `agenda-eventos-${dateStr}`}
-function getEvents(dateStr){return JSON.parse(localStorage.getItem(eventKey(dateStr))||"[]")}
-function setEvents(dateStr,events){localStorage.setItem(eventKey(dateStr),JSON.stringify(events))}
-function hasEvents(dateStr){return getEvents(dateStr).length>0}
+function niceDate(s){const[y,m,d]=s.split("-");return `${d}/${m}/${y}`}
+function key(s){return "agenda3d-"+s}
+function getEvents(s){return JSON.parse(localStorage.getItem(key(s))||"[]")}
+function setEvents(s,e){localStorage.setItem(key(s),JSON.stringify(e))}
+function hasEvents(s){return getEvents(s).length>0}
 
 function setupYears(){
   const base=new Date().getFullYear();
-  for(let y=base-3;y<=base+5;y++){const opt=document.createElement("option");opt.value=y;opt.textContent=y;if(y===currentYear)opt.selected=true;yearSelect.appendChild(opt)}
-  yearSelect.addEventListener("change",()=>{currentYear=Number(yearSelect.value);renderCalendar()});
+  for(let y=base-3;y<=base+5;y++){let o=document.createElement("option");o.value=y;o.textContent=y;if(y===base)o.selected=true;yearSelect.appendChild(o)}
+  yearSelect.onchange=()=>{currentYear=Number(yearSelect.value);renderCalendar()}
 }
 function renderCalendar(){
   monthsEl.innerHTML="";
-  for(let month=0;month<12;month++){
+  for(let m=0;m<12;m++){
     const box=document.createElement("div");box.className="month";
-    const title=document.createElement("h2");title.innerHTML=`${monthNames[month]} <span class="month-badge">${currentYear}</span>`;box.appendChild(title);
-    const weekdays=document.createElement("div");weekdays.className="weekdays";weekDays.forEach(w=>{const div=document.createElement("div");div.textContent=w;weekdays.appendChild(div)});box.appendChild(weekdays);
+    box.innerHTML=`<h2>${monthNames[m]} <span class="badge">${currentYear}</span></h2>`;
+    const wd=document.createElement("div");wd.className="weekdays";weekDays.forEach(w=>{let d=document.createElement("div");d.textContent=w;wd.appendChild(d)});box.appendChild(wd);
     const days=document.createElement("div");days.className="days";
-    const firstDay=new Date(currentYear,month,1).getDay(),totalDays=new Date(currentYear,month+1,0).getDate();
-    for(let i=0;i<firstDay;i++){const empty=document.createElement("button");empty.className="day empty";empty.disabled=true;days.appendChild(empty)}
-    for(let d=1;d<=totalDays;d++){
-      const date=new Date(currentYear,month,d),dateStr=formatDate(date),btn=document.createElement("button");
-      btn.className="day";btn.textContent=d;btn.setAttribute("aria-label",`Dia ${d} de ${monthNames[month]} de ${currentYear}`);
-      if(dateStr===formatDate(new Date()))btn.classList.add("today"); if(hasEvents(dateStr))btn.classList.add("has-event");
-      btn.onclick=()=>selectDate(dateStr); days.appendChild(btn);
+    const first=new Date(currentYear,m,1).getDay(),total=new Date(currentYear,m+1,0).getDate();
+    for(let i=0;i<first;i++){let b=document.createElement("button");b.className="day empty";b.disabled=true;days.appendChild(b)}
+    for(let d=1;d<=total;d++){
+      const date=new Date(currentYear,m,d),s=formatDate(date),b=document.createElement("button");
+      b.className="day";b.textContent=d;
+      if(s===formatDate(new Date()))b.classList.add("today");
+      if(hasEvents(s))b.classList.add("has-event");
+      b.onclick=()=>selectDate(s);days.appendChild(b);
     }
     box.appendChild(days);monthsEl.appendChild(box);
   }
 }
-function selectDate(dateStr){
-  selectedDate=dateStr;selectedDateText.textContent=`Dia selecionado: ${niceDate(dateStr)}`;
-  document.getElementById("eventTitle").value="";document.getElementById("eventTime").value="";document.getElementById("eventNotes").value="";
-  renderEvents();
+function selectDate(s){
+  selectedDate=s;selectedDateText.textContent="Dia selecionado: "+niceDate(s);
+  eventTitle.value="";eventTime.value="";eventNotes.value="";renderEvents();
 }
 function saveEvent(){
-  const title=document.getElementById("eventTitle").value.trim(),time=document.getElementById("eventTime").value,notes=document.getElementById("eventNotes").value.trim();
-  if(!title){alert("Digite um título para a atividade.");return}
-  const events=getEvents(selectedDate);events.push({id:Date.now(),title,time,notes});setEvents(selectedDate,events);
-  document.getElementById("eventTitle").value="";document.getElementById("eventTime").value="";document.getElementById("eventNotes").value="";
-  renderEvents();renderCalendar();
+  const title=eventTitle.value.trim(),time=eventTime.value,notes=eventNotes.value.trim();
+  if(!title){alert("Digite um título.");return}
+  const ev=getEvents(selectedDate);ev.push({id:Date.now(),title,time,notes});setEvents(selectedDate,ev);
+  eventTitle.value="";eventTime.value="";eventNotes.value="";renderEvents();renderCalendar();
 }
 function renderEvents(){
-  const events=getEvents(selectedDate);eventList.innerHTML="";
-  if(events.length===0){eventList.innerHTML=`<div class="event"><strong>Nenhuma atividade ainda.</strong><p>Adicione reunião, aula, tarefa ou lembrete.</p></div>`;return}
-  events.sort((a,b)=>(a.time||"").localeCompare(b.time||"")).forEach(ev=>{
-    const div=document.createElement("div");div.className="event";
-    div.innerHTML=`<strong>${ev.title}</strong><small>${ev.time?"⏰ "+ev.time:"Sem horário"} • ${niceDate(selectedDate)}</small>${ev.notes?`<p>${ev.notes}</p>`:""}<div class="event-actions"><button class="tiny delete" onclick="deleteEvent(${ev.id})">Excluir</button></div>`;
+  const ev=getEvents(selectedDate);eventList.innerHTML="";
+  if(!ev.length){eventList.innerHTML='<div class="event"><strong>Nenhuma atividade ainda.</strong><p>Salve uma tarefa ou reunião para este dia.</p></div>';return}
+  ev.sort((a,b)=>(a.time||"").localeCompare(b.time||"")).forEach(x=>{
+    let div=document.createElement("div");div.className="event";
+    div.innerHTML=`<strong>${x.title}</strong><small>${x.time?'⏰ '+x.time:'Sem horário'} • ${niceDate(selectedDate)}</small>${x.notes?'<p>'+x.notes+'</p>':''}<br><button class="tiny" onclick="deleteEvent(${x.id})">Excluir</button>`;
     eventList.appendChild(div);
-  });
+  })
 }
-function deleteEvent(id){setEvents(selectedDate,getEvents(selectedDate).filter(ev=>ev.id!==id));renderEvents();renderCalendar()}
-function goToday(){const today=new Date();currentYear=today.getFullYear();yearSelect.value=currentYear;selectedDate=formatDate(today);renderCalendar();selectDate(selectedDate)}
-function toggleDark(){document.body.classList.toggle("dark");localStorage.setItem("agenda-dark",document.body.classList.contains("dark"))}
-if(localStorage.getItem("agenda-dark")==="true")document.body.classList.add("dark");
+function deleteEvent(id){setEvents(selectedDate,getEvents(selectedDate).filter(e=>e.id!==id));renderEvents();renderCalendar()}
+function goToday(){const t=new Date();currentYear=t.getFullYear();yearSelect.value=currentYear;renderCalendar();selectDate(formatDate(t))}
 
-let calc="";const calcDisplay=document.getElementById("calcDisplay");
-function updateCalc(){calcDisplay.value=calc?calc.replaceAll("*","×").replaceAll("/","÷"):"0"}
-function calcPress(value){calc+=value==="%"?"/100":value;updateCalc()}
-function calcClear(){calc="";updateCalc()}
-function calcBack(){calc=calc.slice(0,-1);updateCalc()}
-function calcEqual(){try{if(!/^[0-9+\-*/.() ]+$/.test(calc))throw new Error("inválido");const result=Function(`"use strict"; return (${calc})`)();calc=String(Number.isFinite(result)?result:"");updateCalc()}catch(e){calcDisplay.value="Erro";calc=""}}
+let calc="",calcDisplay=document.getElementById("calcDisplay");
+function upd(){calcDisplay.value=calc?calc.replaceAll("*","×").replaceAll("/","÷"):"0"}
+function calcPress(v){calc+=v==="%"?"/100":v;upd()}
+function calcClear(){calc="";upd()}
+function calcBack(){calc=calc.slice(0,-1);upd()}
+function calcEqual(){try{if(!/^[0-9+\-*/.() ]+$/.test(calc))throw Error();let r=Function('"use strict";return('+calc+')')();calc=String(Number.isFinite(r)?r:"");upd()}catch(e){calcDisplay.value="Erro";calc=""}}
 
+const chatbox=document.getElementById("chatbox"),chatInput=document.getElementById("chatInput");
+function addMsg(text,who="bot"){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;chatbox.appendChild(d);chatbox.scrollTop=chatbox.scrollHeight}
+function botReply(text){
+  const t=text.toLowerCase();
+  if(t.includes("organizar")||t.includes("dia")||t.includes("agenda")) return "Estou com você. Vamos por partes: escolha 3 prioridades reais para hoje, coloque horário para cada uma e reserve um intervalo de descanso. Quer começar pela tarefa mais urgente?";
+  if(t.includes("espírita")||t.includes("espirit")||t.includes("oração")||t.includes("prece")) return "Na visão espírita, vale perguntar: o que esta situação pode ensinar sobre paciência, caridade e responsabilidade? Faça uma prece simples, respire e aja com serenidade, sem abandonar a razão.";
+  if(t.includes("comportamento")||t.includes("pessoa")||t.includes("postura")||t.includes("fala")) return "Posso ajudar a observar comportamento por sinais: palavras usadas, coerência, tom, contexto, repetição e interesse envolvido. Mas não concluo caráter sem provas. Descreva o fato concreto.";
+  if(t.includes("direito")||t.includes("administrativo")||t.includes("civil")||t.includes("penal")||t.includes("processo")) return "Posso organizar a análise jurídica: fatos, provas, norma aplicável, prazo, competência, dano e pedido. Não substituo advogado, mas ajudo você a montar uma linha técnica e prudente.";
+  if(t.includes("triste")||t.includes("cansada")||t.includes("ansiosa")||t.includes("difícil")) return "Sinto muito que seu dia esteja pesado. Estou ao seu lado para organizar as ideias com calma. Primeiro: o que aconteceu, o que você sentiu e qual é o próximo passo seguro?";
+  return "Estou aqui para te apoiar com lucidez. Me conte o fato principal do dia e eu ajudo a separar emoção, prova, prioridade e próximo passo.";
+}
+function sendChat(){const v=chatInput.value.trim();if(!v)return;addMsg(v,"user");chatInput.value="";setTimeout(()=>addMsg(botReply(v),"bot"),250)}
+function quickChat(v){chatInput.value=v;sendChat()}
+chatInput.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat()})
+function installHint(){alert("Para instalar no tablet: abra pelo navegador, toque nos três pontinhos ou compartilhar e escolha 'Adicionar à tela inicial'.")}
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
-if(window.matchMedia("(display-mode: standalone)").matches){document.getElementById("installBox").textContent="Aplicativo aberto em modo instalado.";document.getElementById("installBox").style.display="block"}
-else{document.getElementById("installBox").style.display="block"}
 
 setupYears();renderCalendar();selectDate(selectedDate);
+addMsg("Oi. Eu sou seu Robô do Dia. Como você está hoje? Posso ajudar com agenda, comportamento, reflexão espiritual ou organização jurídica.");
 </script>
 </body>
 </html>
