@@ -1,13 +1,11 @@
 {
-  "name": "Agenda 3D com Robô Assistente",
-  "short_name": "Agenda 3D",
-  "description": "Agenda PWA imersiva com calendário, calculadora e robô assistente.",
+  "name": "Agenda UEM 2026 PWA",
+  "short_name": "Agenda UEM",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#120f2d",
-  "theme_color": "#6c63ff",
+  "theme_color": "#7c5cff",
   "icons": [
     {
       "src": "icon-192.png",

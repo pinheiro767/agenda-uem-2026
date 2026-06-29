@@ -1,280 +1,68 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#6c63ff">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>Agenda 3D com Robô Assistente</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#7c5cff"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Agenda UEM 2026</title>
 <style>
-:root{
-  --bg:#120f2d; --bg2:#241057; --glass:rgba(255,255,255,.13); --glass2:rgba(255,255,255,.2);
-  --text:#fff; --muted:#d9d8ff; --primary:#7c5cff; --cyan:#00d4ff; --pink:#ff75bd;
-  --gold:#ffdd57; --green:#51f28a; --danger:#ff6b6b; --card:#fff; --ink:#19172e;
-  --shadow:0 22px 60px rgba(0,0,0,.38); --radius:30px;
-}
-*{box-sizing:border-box}
-body{
-  margin:0; min-height:100vh; color:var(--text);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(0,212,255,.35), transparent 26%),
-    radial-gradient(circle at 84% 6%, rgba(255,117,189,.33), transparent 28%),
-    radial-gradient(circle at 50% 100%, rgba(124,92,255,.42), transparent 34%),
-    linear-gradient(135deg,var(--bg),var(--bg2));
-  overflow-x:hidden;
-}
-body::before{
-  content:""; position:fixed; inset:0; pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
-  background-size:42px 42px; mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);
-}
-header{padding:22px; display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center}
-.hero,.panel,.calendar-wrap{
-  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
-  border:1px solid rgba(255,255,255,.22); border-radius:var(--radius);
-  box-shadow:var(--shadow); backdrop-filter:blur(18px);
-}
-.hero{padding:24px; position:relative; overflow:hidden}
-.hero::after{
-  content:""; position:absolute; width:260px; height:260px; border-radius:50%;
-  right:-80px; top:-120px; background:radial-gradient(circle,var(--cyan),transparent 65%); opacity:.45;
-}
-h1{margin:0;font-size:clamp(2rem,4vw,4rem);line-height:1.02;text-shadow:0 8px 22px rgba(0,0,0,.26)}
-.subtitle{color:var(--muted);margin-top:10px;font-size:1.08rem;max-width:900px}
-.top-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
-.btn3d,select{
-  border:0; min-height:58px; border-radius:20px; padding:14px 18px; font-weight:900; cursor:pointer;
-  color:white; background:linear-gradient(145deg,#8a75ff,#4a39d4);
-  box-shadow:0 12px 0 #2a217d, 0 20px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.42);
-  transform:translateY(0); transition:.12s;
-}
-.btn3d:active{transform:translateY(8px);box-shadow:0 4px 0 #2a217d,0 12px 18px rgba(0,0,0,.22)}
-.btn3d.cyan{background:linear-gradient(145deg,#35e8ff,#008bc8);box-shadow:0 12px 0 #005d85,0 20px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.42)}
-.btn3d.pink{background:linear-gradient(145deg,#ff95ce,#d92e8a);box-shadow:0 12px 0 #861850,0 20px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.42)}
-.btn3d.gold{background:linear-gradient(145deg,#ffe985,#f5a300);color:#2f2100;box-shadow:0 12px 0 #9b6500,0 20px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.55)}
-select{background:linear-gradient(145deg,#ffffff,#dfe5ff);color:#1d1748;box-shadow:0 12px 0 #aeb8ea,0 20px 30px rgba(0,0,0,.24)}
-main{display:grid; grid-template-columns:minmax(0,1fr) 410px; gap:18px; padding:0 22px 24px}
-.calendar-wrap{padding:18px}
-.months{display:grid; grid-template-columns:repeat(3,minmax(230px,1fr)); gap:14px}
-.month{
-  color:var(--ink); background:linear-gradient(145deg,#fff,#e9eeff); border-radius:24px; padding:13px;
-  box-shadow:0 16px 0 #c9d2ff, 0 26px 35px rgba(0,0,0,.19);
-}
-.month h2{margin:0 0 10px; display:flex; justify-content:space-between; align-items:center; font-size:1.12rem}
-.badge{font-size:.75rem;color:#fff;background:linear-gradient(135deg,var(--primary),var(--pink));padding:6px 10px;border-radius:999px}
-.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.weekdays div{text-align:center;color:#59607a;font-weight:900;font-size:.75rem}
-.day{
-  aspect-ratio:1/1;border:0;border-radius:14px;background:linear-gradient(145deg,#fff,#dce6ff); color:#17172a;
-  font-weight:950; cursor:pointer; position:relative;
-  box-shadow:0 6px 0 #bdc9f2,0 10px 14px rgba(0,0,0,.12);
-}
-.day:active{transform:translateY(4px);box-shadow:0 2px 0 #bdc9f2}
-.day.today{outline:3px solid var(--pink);background:linear-gradient(145deg,#fff,#ffe2f3)}
-.day.has-event::after{content:"";position:absolute;bottom:5px;left:50%;width:9px;height:9px;border-radius:50%;background:var(--pink);transform:translateX(-50%);box-shadow:0 0 12px var(--pink)}
-.empty{visibility:hidden}
-.side{display:flex;flex-direction:column;gap:18px}
-.panel{padding:18px}
-.panel h2{margin:0 0 12px;font-size:1.35rem}
-input,textarea{
-  width:100%;border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:14px;
-  background:rgba(255,255,255,.92);color:#15152b;font:inherit;outline:none;
-}
-textarea{min-height:86px;resize:vertical}
-label{display:block;font-weight:900;margin:10px 0 6px}
-.selected{color:var(--gold);font-weight:950;margin-bottom:8px}
-.event-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:250px;overflow:auto}
-.event{
-  background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(225,236,255,.94));color:#16172c;border-radius:20px;padding:13px;
-  border-left:7px solid var(--cyan);box-shadow:0 10px 20px rgba(0,0,0,.18)
-}
-.event small{color:#51576d}.event p{margin:6px 0 0}
-.tiny{border:0;border-radius:13px;padding:8px 10px;font-weight:900;cursor:pointer;margin-top:8px;background:#ffe1e1;color:#8c1111}
-.calc-display{font-size:1.7rem;text-align:right;background:#070718;color:#fff;border:1px solid rgba(255,255,255,.18);min-height:64px;margin-bottom:12px}
-.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.calc-grid button{
-  min-height:58px;border:0;border-radius:18px;font-size:1.15rem;font-weight:950;cursor:pointer;
-  background:linear-gradient(145deg,#fff,#dbe6ff);box-shadow:0 7px 0 #aebde8;color:#16172c;
-}
-.calc-grid button:active{transform:translateY(4px);box-shadow:0 3px 0 #aebde8}
-.calc-grid .op{background:linear-gradient(145deg,#7ef0ff,#00a1da);box-shadow:0 7px 0 #00658b;color:#002235}
-.calc-grid .clear{background:linear-gradient(145deg,#ffb1b1,#ff5d5d);box-shadow:0 7px 0 #9d2222;color:#fff}
-.calc-grid .equal{grid-column:span 2;background:linear-gradient(145deg,#fff07d,#ffb300);box-shadow:0 7px 0 #9b6500;color:#2f2100}
-.robot-card{position:relative;overflow:hidden}
-.robot-head{
-  width:112px;height:92px;margin:4px auto 10px;border-radius:32px;background:linear-gradient(145deg,#fff,#cddaff);
-  box-shadow:0 14px 0 #8d9bd8,0 25px 32px rgba(0,0,0,.26);position:relative;
-}
-.robot-head::before{content:"";position:absolute;width:10px;height:28px;background:#fff;left:50%;top:-28px;transform:translateX(-50%);border-radius:9px}
-.robot-head::after{content:"";position:absolute;width:24px;height:24px;background:var(--gold);left:50%;top:-42px;transform:translateX(-50%);border-radius:50%;box-shadow:0 0 22px var(--gold)}
-.eye{position:absolute;top:34px;width:18px;height:18px;background:#18133f;border-radius:50%;box-shadow:0 0 12px var(--cyan)}
-.eye.left{left:30px}.eye.right{right:30px}
-.mouth{position:absolute;left:39px;top:58px;width:34px;height:14px;border-bottom:5px solid #18133f;border-radius:0 0 30px 30px}
-.chatbox{
-  background:rgba(6,8,25,.58);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:12px;
-  height:240px;overflow:auto;display:flex;flex-direction:column;gap:10px
-}
-.msg{padding:10px 12px;border-radius:16px;max-width:92%;line-height:1.35}
-.bot{background:rgba(255,255,255,.16);align-self:flex-start}
-.user{background:linear-gradient(135deg,var(--primary),var(--pink));align-self:flex-end}
-.chat-row{display:flex;gap:8px;margin-top:10px}
-.chat-row input{background:#fff;color:#111;min-width:0}
-.chat-row button{min-width:76px}
-.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.quick button{font-size:.86rem;min-height:42px;padding:9px 11px;border-radius:16px}
-.notice{font-size:.82rem;color:var(--muted);margin-top:10px;line-height:1.3}
-@media(max-width:1180px){main{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.months{grid-template-columns:repeat(2,minmax(230px,1fr))}.robot-card{grid-column:1/-1}}
-@media(max-width:760px){header{grid-template-columns:1fr;padding:14px}.top-actions{justify-content:stretch}.top-actions>*{flex:1}main{padding:0 14px 20px}.months{grid-template-columns:1fr}.side{display:flex}.month{box-shadow:0 10px 0 #c9d2ff,0 18px 25px rgba(0,0,0,.18)}}
+:root{--bg:#120f2d;--bg2:#241057;--text:#fff;--muted:#ddd9ff;--primary:#7c5cff;--cyan:#00d4ff;--pink:#ff75bd;--gold:#ffdd57;--green:#51f28a;--red:#ff4040;--blue:#9ed0ff;--ink:#17172d;--shadow:0 22px 60px rgba(0,0,0,.38)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 10% 10%,rgba(0,212,255,.35),transparent 26%),radial-gradient(circle at 84% 6%,rgba(255,117,189,.33),transparent 28%),linear-gradient(135deg,var(--bg),var(--bg2))}
+header{padding:18px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}.hero,.panel,.calendar-wrap{background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.22);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}.hero{padding:22px}h1{margin:0;font-size:clamp(2rem,4vw,3.8rem)}.subtitle{color:var(--muted);margin-top:8px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.btn,select{border:0;min-height:54px;border-radius:18px;padding:12px 15px;font-weight:950;cursor:pointer;color:white;background:linear-gradient(145deg,#8a75ff,#4a39d4);box-shadow:0 9px 0 #2a217d,0 16px 25px rgba(0,0,0,.28)}.btn:active{transform:translateY(6px);box-shadow:0 3px 0 #2a217d}.cyan{background:linear-gradient(145deg,#35e8ff,#008bc8);box-shadow:0 9px 0 #005d85,0 16px 25px rgba(0,0,0,.28)}.green{background:linear-gradient(145deg,#8cffb2,#16a34a);box-shadow:0 9px 0 #0d6b2e,0 16px 25px rgba(0,0,0,.28)}.gold{background:linear-gradient(145deg,#ffe985,#f5a300);color:#2f2100;box-shadow:0 9px 0 #9b6500,0 16px 25px rgba(0,0,0,.28)}select{background:linear-gradient(145deg,#fff,#dfe5ff);color:#1d1748;box-shadow:0 9px 0 #aeb8ea,0 16px 25px rgba(0,0,0,.24)}
+main{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:18px;padding:0 18px 22px}.calendar-wrap{padding:16px}.months{display:grid;grid-template-columns:repeat(3,minmax(230px,1fr));gap:14px}.month{color:var(--ink);background:linear-gradient(145deg,#fff,#e9eeff);border-radius:22px;padding:12px;box-shadow:0 12px 0 #c9d2ff,0 22px 30px rgba(0,0,0,.19)}.month h2{margin:0 0 9px;display:flex;justify-content:space-between;align-items:center}.badge{font-size:.72rem;color:#fff;background:linear-gradient(135deg,var(--primary),var(--pink));padding:5px 9px;border-radius:999px}.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.weekdays div{text-align:center;color:#59607a;font-weight:900;font-size:.73rem}.day{aspect-ratio:1/1;border:0;border-radius:13px;background:linear-gradient(145deg,#fff,#dce6ff);color:#17172a;font-weight:950;cursor:pointer;position:relative;box-shadow:0 5px 0 #bdc9f2}.day.today{outline:3px solid var(--pink)}.day.uem-class{background:linear-gradient(145deg,#e7f7ff,#9ed0ff)}.day.uem-second{background:linear-gradient(145deg,#eaffef,#a8f0c0)}.day.uem-final{background:linear-gradient(145deg,#fff3b0,#ffdf57)}.day.uem-holiday{background:linear-gradient(145deg,#ff9292,#ff4040);color:white}.day.uem-recess{background:linear-gradient(145deg,#ffd1e7,#ff75bd)}.day.uem-vac{background:linear-gradient(145deg,#fff584,#ffdd57)}.day.has-event:after{content:"";position:absolute;bottom:4px;left:50%;width:8px;height:8px;border-radius:50%;background:#111;transform:translateX(-50%)}.empty{visibility:hidden}
+.side{display:flex;flex-direction:column;gap:16px}.panel{padding:16px}.panel h2{margin:0 0 10px}input,textarea{width:100%;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:12px;background:rgba(255,255,255,.94);color:#15152b;font:inherit}textarea{min-height:72px}label{display:block;font-weight:900;margin:9px 0 5px}.selected{color:var(--gold);font-weight:950}.list{display:flex;flex-direction:column;gap:9px;margin-top:10px;max-height:260px;overflow:auto}.item{background:linear-gradient(145deg,#fff,#e9f0ff);color:#16172c;border-radius:18px;padding:12px;border-left:7px solid var(--cyan);box-shadow:0 8px 16px rgba(0,0,0,.16)}.item.uem{border-left-color:var(--pink)}.item.warn{border-left-color:var(--gold)}small{color:#51576d}.tiny{border:0;border-radius:12px;padding:7px 9px;font-weight:900;cursor:pointer;margin-top:7px;background:#ffe1e1;color:#8c1111}
+.chatbox{background:rgba(6,8,25,.58);border-radius:20px;padding:10px;height:220px;overflow:auto;display:flex;flex-direction:column;gap:8px}.msg{padding:9px 11px;border-radius:15px;max-width:92%}.bot{background:rgba(255,255,255,.16);align-self:flex-start}.user{background:linear-gradient(135deg,var(--primary),var(--pink));align-self:flex-end}.chat-row{display:flex;gap:8px;margin-top:8px}.quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.quick .btn{font-size:.8rem;min-height:38px;padding:7px 9px}.file-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.calc-display{font-size:1.5rem;text-align:right;background:#070718;color:#fff}.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.calc-grid button{min-height:50px;border:0;border-radius:15px;font-weight:950}.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:.86rem}.leg{padding:7px;border-radius:10px;color:#111;font-weight:800}.blue{background:#9ed0ff}.greenbox{background:#a8f0c0}.yellow{background:#ffdf57}.red{background:#ff6464;color:white}.pinkbox{background:#ffb5d8}.vac{background:#fff584}
+@media(max-width:1180px){main{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.months{grid-template-columns:repeat(2,minmax(230px,1fr))}.week-panel,.robot-card{grid-column:1/-1}}@media(max-width:760px){header{grid-template-columns:1fr}.actions>*{flex:1}main{padding:0 12px 18px}.months{grid-template-columns:1fr}.side{display:flex}}
+@media print{body{background:white;color:black}.actions,.calendar-wrap,.robot-card,.calc-panel,.file-panel,.form-panel,.tiny{display:none!important}.panel,.hero{box-shadow:none;border:1px solid #ddd;background:white;color:black}main{display:block}.side{display:block}.week-panel{display:block}.item{break-inside:avoid;border:1px solid #ddd;color:black;background:white}}
 </style>
 </head>
 <body>
-<header>
-  <section class="hero">
-    <h1>Agenda 3D com Robô Assistente</h1>
-    <div class="subtitle">Calendário anual, atividades, reuniões, calculadora e conversa acolhedora para organizar seu dia.</div>
-  </section>
-  <section class="top-actions">
-    <select id="yearSelect"></select>
-    <button class="btn3d cyan" onclick="goToday()">Hoje</button>
-    <button class="btn3d pink" onclick="installHint()">Instalar</button>
-  </section>
-</header>
-
-<main>
-  <section class="calendar-wrap"><div id="months" class="months"></div></section>
-
-  <aside class="side">
-    <section class="panel">
-      <h2>📝 Atividade / Reunião</h2>
-      <div class="selected" id="selectedDateText">Selecione um dia</div>
-      <label>Título</label><input id="eventTitle" placeholder="Ex.: reunião, aula, prazo...">
-      <label>Horário</label><input id="eventTime" type="time">
-      <label>Observações</label><textarea id="eventNotes" placeholder="Detalhes importantes..."></textarea>
-      <button class="btn3d gold" style="width:100%;margin-top:12px" onclick="saveEvent()">Salvar no calendário</button>
-      <div id="eventList" class="event-list"></div>
-    </section>
-
-    <section class="panel">
-      <h2>🧮 Calculadora</h2>
-      <input class="calc-display" id="calcDisplay" readonly value="0">
-      <div class="calc-grid">
-        <button class="clear" onclick="calcClear()">C</button><button onclick="calcBack()">⌫</button><button class="op" onclick="calcPress('%')">%</button><button class="op" onclick="calcPress('/')">÷</button>
-        <button onclick="calcPress('7')">7</button><button onclick="calcPress('8')">8</button><button onclick="calcPress('9')">9</button><button class="op" onclick="calcPress('*')">×</button>
-        <button onclick="calcPress('4')">4</button><button onclick="calcPress('5')">5</button><button onclick="calcPress('6')">6</button><button class="op" onclick="calcPress('-')">−</button>
-        <button onclick="calcPress('1')">1</button><button onclick="calcPress('2')">2</button><button onclick="calcPress('3')">3</button><button class="op" onclick="calcPress('+')">+</button>
-        <button onclick="calcPress('0')">0</button><button onclick="calcPress('.')">,</button><button class="equal" onclick="calcEqual()">=</button>
-      </div>
-    </section>
-
-    <section class="panel robot-card">
-      <h2>🤖 Robô do Dia</h2>
-      <div class="robot-head"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
-      <div class="chatbox" id="chatbox"></div>
-      <div class="quick">
-        <button class="btn3d cyan" onclick="quickChat('Como organizar meu dia?')">Organizar dia</button>
-        <button class="btn3d pink" onclick="quickChat('Analise um comportamento')">Comportamento</button>
-        <button class="btn3d gold" onclick="quickChat('Quero uma reflexão espírita')">Reflexão</button>
-        <button class="btn3d" onclick="quickChat('Tenho dúvida jurídica')">Direito</button>
-      </div>
-      <div class="chat-row">
-        <input id="chatInput" placeholder="Conte como foi seu dia...">
-        <button class="btn3d cyan" onclick="sendChat()">Enviar</button>
-      </div>
-      <div class="notice">
-        O robô é uma ajuda local e educativa. Ele apoia você, mas não substitui advogado, psicólogo, médico ou orientação espiritual formal.
-      </div>
-    </section>
-  </aside>
-</main>
-
+<header><section class="hero"><h1>Agenda UEM 2026</h1><div class="subtitle">Respeita o Calendário Acadêmico UEM — Maringá 2026: aulas, avaliações, férias, feriados, recessos, compromissos pessoais, arquivos, PDF e robô.</div></section><section class="actions"><select id="yearSelect"></select><button class="btn cyan" onclick="goToday()">Hoje</button><button class="btn green" onclick="generatePDF()">PDF</button><button class="btn" onclick="installHint()">Instalar</button></section></header>
+<main><section class="calendar-wrap"><div class="legend"><div class="leg blue">1º semestre</div><div class="leg greenbox">2º semestre</div><div class="leg yellow">Avaliação final</div><div class="leg vac">Férias letivas</div><div class="leg red">Feriado/domingo</div><div class="leg pinkbox">Recesso</div></div><br><div id="months" class="months"></div></section>
+<aside class="side">
+<section class="panel week-panel"><h2>🔔 Semana UEM + compromissos</h2><div id="weekRange" class="selected"></div><div id="weekList" class="list"></div><button class="btn green" style="width:100%;margin-top:10px" onclick="generatePDF()">Gerar PDF da semana</button></section>
+<section class="panel form-panel"><h2>📝 Atividade / Reunião</h2><div class="selected" id="selectedDateText"></div><div id="uemDayInfo" class="list"></div><label>Título</label><input id="eventTitle"><label>Horário</label><input id="eventTime" type="time"><label>Observações</label><textarea id="eventNotes"></textarea><button class="btn gold" style="width:100%;margin-top:10px" onclick="saveEvent()">Salvar</button><div id="eventList" class="list"></div></section>
+<section class="panel file-panel"><h2>📎 Arquivos</h2><div class="file-row"><div><label>Anexos do dia</label><input id="fileInput" type="file" multiple></div><button class="btn cyan" onclick="saveFiles()">Salvar</button></div><div id="fileList" class="list"></div></section>
+<section class="panel calc-panel"><h2>🧮 Calculadora</h2><input class="calc-display" id="calcDisplay" readonly value="0"><div class="calc-grid"><button onclick="calcClear()">C</button><button onclick="calcBack()">⌫</button><button onclick="calcPress('/')">÷</button><button onclick="calcPress('*')">×</button><button onclick="calcPress('7')">7</button><button onclick="calcPress('8')">8</button><button onclick="calcPress('9')">9</button><button onclick="calcPress('-')">−</button><button onclick="calcPress('4')">4</button><button onclick="calcPress('5')">5</button><button onclick="calcPress('6')">6</button><button onclick="calcPress('+')">+</button><button onclick="calcPress('1')">1</button><button onclick="calcPress('2')">2</button><button onclick="calcPress('3')">3</button><button onclick="calcEqual()">=</button><button onclick="calcPress('0')">0</button><button onclick="calcPress('.')">,</button></div></section>
+<section class="panel robot-card"><h2>🤖 Robô UEM</h2><div class="chatbox" id="chatbox"></div><div class="quick"><button class="btn cyan" onclick="quickChat('semana')">Semana</button><button class="btn gold" onclick="quickChat('uem hoje')">UEM hoje</button><button class="btn" onclick="quickChat('direito')">Direito</button><button class="btn" onclick="quickChat('espiritismo')">Espiritismo</button></div><div class="chat-row"><input id="chatInput" placeholder="Pergunte ao robô..."><button class="btn cyan" onclick="sendChat()">Enviar</button></div><small>Ajuda educativa. Não substitui advogado, terapeuta, médico ou orientação espiritual formal.</small></section>
+</aside></main>
 <script>
-const monthNames=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-const weekDays=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
-const monthsEl=document.getElementById("months"),yearSelect=document.getElementById("yearSelect"),selectedDateText=document.getElementById("selectedDateText"),eventList=document.getElementById("eventList");
-let currentYear=new Date().getFullYear(),selectedDate=formatDate(new Date());
-
-function formatDate(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
-function niceDate(s){const[y,m,d]=s.split("-");return `${d}/${m}/${y}`}
-function key(s){return "agenda3d-"+s}
-function getEvents(s){return JSON.parse(localStorage.getItem(key(s))||"[]")}
-function setEvents(s,e){localStorage.setItem(key(s),JSON.stringify(e))}
-function hasEvents(s){return getEvents(s).length>0}
-
-function setupYears(){
-  const base=new Date().getFullYear();
-  for(let y=base-3;y<=base+5;y++){let o=document.createElement("option");o.value=y;o.textContent=y;if(y===base)o.selected=true;yearSelect.appendChild(o)}
-  yearSelect.onchange=()=>{currentYear=Number(yearSelect.value);renderCalendar()}
-}
-function renderCalendar(){
-  monthsEl.innerHTML="";
-  for(let m=0;m<12;m++){
-    const box=document.createElement("div");box.className="month";
-    box.innerHTML=`<h2>${monthNames[m]} <span class="badge">${currentYear}</span></h2>`;
-    const wd=document.createElement("div");wd.className="weekdays";weekDays.forEach(w=>{let d=document.createElement("div");d.textContent=w;wd.appendChild(d)});box.appendChild(wd);
-    const days=document.createElement("div");days.className="days";
-    const first=new Date(currentYear,m,1).getDay(),total=new Date(currentYear,m+1,0).getDate();
-    for(let i=0;i<first;i++){let b=document.createElement("button");b.className="day empty";b.disabled=true;days.appendChild(b)}
-    for(let d=1;d<=total;d++){
-      const date=new Date(currentYear,m,d),s=formatDate(date),b=document.createElement("button");
-      b.className="day";b.textContent=d;
-      if(s===formatDate(new Date()))b.classList.add("today");
-      if(hasEvents(s))b.classList.add("has-event");
-      b.onclick=()=>selectDate(s);days.appendChild(b);
-    }
-    box.appendChild(days);monthsEl.appendChild(box);
-  }
-}
-function selectDate(s){
-  selectedDate=s;selectedDateText.textContent="Dia selecionado: "+niceDate(s);
-  eventTitle.value="";eventTime.value="";eventNotes.value="";renderEvents();
-}
-function saveEvent(){
-  const title=eventTitle.value.trim(),time=eventTime.value,notes=eventNotes.value.trim();
-  if(!title){alert("Digite um título.");return}
-  const ev=getEvents(selectedDate);ev.push({id:Date.now(),title,time,notes});setEvents(selectedDate,ev);
-  eventTitle.value="";eventTime.value="";eventNotes.value="";renderEvents();renderCalendar();
-}
-function renderEvents(){
-  const ev=getEvents(selectedDate);eventList.innerHTML="";
-  if(!ev.length){eventList.innerHTML='<div class="event"><strong>Nenhuma atividade ainda.</strong><p>Salve uma tarefa ou reunião para este dia.</p></div>';return}
-  ev.sort((a,b)=>(a.time||"").localeCompare(b.time||"")).forEach(x=>{
-    let div=document.createElement("div");div.className="event";
-    div.innerHTML=`<strong>${x.title}</strong><small>${x.time?'⏰ '+x.time:'Sem horário'} • ${niceDate(selectedDate)}</small>${x.notes?'<p>'+x.notes+'</p>':''}<br><button class="tiny" onclick="deleteEvent(${x.id})">Excluir</button>`;
-    eventList.appendChild(div);
-  })
-}
-function deleteEvent(id){setEvents(selectedDate,getEvents(selectedDate).filter(e=>e.id!==id));renderEvents();renderCalendar()}
-function goToday(){const t=new Date();currentYear=t.getFullYear();yearSelect.value=currentYear;renderCalendar();selectDate(formatDate(t))}
-
-let calc="",calcDisplay=document.getElementById("calcDisplay");
-function upd(){calcDisplay.value=calc?calc.replaceAll("*","×").replaceAll("/","÷"):"0"}
-function calcPress(v){calc+=v==="%"?"/100":v;upd()}
-function calcClear(){calc="";upd()}
-function calcBack(){calc=calc.slice(0,-1);upd()}
-function calcEqual(){try{if(!/^[0-9+\-*/.() ]+$/.test(calc))throw Error();let r=Function('"use strict";return('+calc+')')();calc=String(Number.isFinite(r)?r:"");upd()}catch(e){calcDisplay.value="Erro";calc=""}}
-
-const chatbox=document.getElementById("chatbox"),chatInput=document.getElementById("chatInput");
-function addMsg(text,who="bot"){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;chatbox.appendChild(d);chatbox.scrollTop=chatbox.scrollHeight}
-function botReply(text){
-  const t=text.toLowerCase();
-  if(t.includes("organizar")||t.includes("dia")||t.includes("agenda")) return "Estou com você. Vamos por partes: escolha 3 prioridades reais para hoje, coloque horário para cada uma e reserve um intervalo de descanso. Quer começar pela tarefa mais urgente?";
-  if(t.includes("espírita")||t.includes("espirit")||t.includes("oração")||t.includes("prece")) return "Na visão espírita, vale perguntar: o que esta situação pode ensinar sobre paciência, caridade e responsabilidade? Faça uma prece simples, respire e aja com serenidade, sem abandonar a razão.";
-  if(t.includes("comportamento")||t.includes("pessoa")||t.includes("postura")||t.includes("fala")) return "Posso ajudar a observar comportamento por sinais: palavras usadas, coerência, tom, contexto, repetição e interesse envolvido. Mas não concluo caráter sem provas. Descreva o fato concreto.";
-  if(t.includes("direito")||t.includes("administrativo")||t.includes("civil")||t.includes("penal")||t.includes("processo")) return "Posso organizar a análise jurídica: fatos, provas, norma aplicável, prazo, competência, dano e pedido. Não substituo advogado, mas ajudo você a montar uma linha técnica e prudente.";
-  if(t.includes("triste")||t.includes("cansada")||t.includes("ansiosa")||t.includes("difícil")) return "Sinto muito que seu dia esteja pesado. Estou ao seu lado para organizar as ideias com calma. Primeiro: o que aconteceu, o que você sentiu e qual é o próximo passo seguro?";
-  return "Estou aqui para te apoiar com lucidez. Me conte o fato principal do dia e eu ajudo a separar emoção, prova, prioridade e próximo passo.";
-}
-function sendChat(){const v=chatInput.value.trim();if(!v)return;addMsg(v,"user");chatInput.value="";setTimeout(()=>addMsg(botReply(v),"bot"),250)}
-function quickChat(v){chatInput.value=v;sendChat()}
-chatInput.addEventListener("keydown",e=>{if(e.key==="Enter")sendChat()})
-function installHint(){alert("Para instalar no tablet: abra pelo navegador, toque nos três pontinhos ou compartilhar e escolha 'Adicionar à tela inicial'.")}
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
-
-setupYears();renderCalendar();selectDate(selectedDate);
-addMsg("Oi. Eu sou seu Robô do Dia. Como você está hoje? Posso ajudar com agenda, comportamento, reflexão espiritual ou organização jurídica.");
-</script>
-</body>
-</html>
+const monthNames=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"],weekDays=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const UEM={
+"2026-03-04":[["class","EFUEM"]],"2026-03-09":[["class","Início do ano letivo — 1º semestre/anual"],["class","Integração acadêmica 9 a 11"]],"2026-03-10":[["class","Integração acadêmica"]],"2026-03-11":[["class","Integração acadêmica"]],"2026-03-30":[["class","Início da Avaliação Institucional Integrada"]],
+"2026-04-03":[["holiday","Paixão de Cristo"]],"2026-04-20":[["recess","Recesso acadêmico"]],"2026-04-21":[["holiday","Tiradentes"]],
+"2026-05-01":[["holiday","Dia do Trabalho"]],"2026-05-02":[["recess","Recesso acadêmico"]],"2026-05-10":[["holiday","Aniversário de Maringá"]],"2026-05-11":[["class","Reconhecimento da UEM"]],"2026-05-30":[["class","Término da Avaliação Institucional Integrada"]],
+"2026-06-04":[["holiday","Corpus Christi"]],
+"2026-07-11":[["class","Fim das aulas do 1º semestre"]],"2026-07-13":[["final","Avaliação final — disciplinas semestrais"]],"2026-07-14":[["final","Avaliação final — disciplinas semestrais"]],"2026-07-15":[["final","Avaliação final — disciplinas semestrais"]],"2026-07-16":[["final","Avaliação final — disciplinas semestrais"]],"2026-07-17":[["final","Avaliação final — disciplinas semestrais"]],"2026-07-18":[["final","Avaliação final — disciplinas semestrais"]],"2026-07-20":[["final","Implantação de notas da avaliação final — 1º semestre"]],"2026-07-21":[["vac","Férias letivas"]],"2026-07-22":[["vac","Férias letivas"]],"2026-07-23":[["vac","Férias letivas"]],"2026-07-24":[["vac","Férias letivas"]],"2026-07-25":[["vac","Férias letivas"]],"2026-07-27":[["vac","Férias letivas"]],"2026-07-28":[["vac","Férias letivas"]],"2026-07-29":[["vac","Férias letivas"]],"2026-07-30":[["vac","Férias letivas"]],"2026-07-31":[["vac","Férias letivas"]],
+"2026-08-01":[["vac","Férias letivas"]],"2026-08-03":[["vac","Férias letivas"]],"2026-08-04":[["second","Início do 2º semestre letivo"]],"2026-08-15":[["recess","Padroeira de Maringá — Recesso"]],
+"2026-09-07":[["holiday","Independência do Brasil"]],"2026-09-14":[["class","EAGE, EAEX, EAAC, Semana de Artes e Mostra de Profissões — 14 a 18"]],"2026-09-15":[["class","EAGE/EAEX/EAAC/Semana de Artes/Mostra"]],"2026-09-16":[["class","EAGE/EAEX/EAAC/Semana de Artes/Mostra"]],"2026-09-17":[["class","EAGE/EAEX/EAAC/Semana de Artes/Mostra"]],"2026-09-18":[["class","EAGE/EAEX/EAAC/Semana de Artes/Mostra"]],
+"2026-10-04":[["holiday","Eleições 2026"]],"2026-10-12":[["holiday","Nossa Senhora Aparecida"]],"2026-10-15":[["class","Dia dos Professores — data comemorativa"]],"2026-10-25":[["holiday","Eleições 2026"]],"2026-10-28":[["class","Dia do Funcionário Público — data comemorativa"]],
+"2026-11-02":[["holiday","Finados"]],"2026-11-09":[["class","EAIC — 9 e 10"]],"2026-11-10":[["class","EAIC"]],"2026-11-15":[["holiday","Proclamação da República"]],"2026-11-20":[["holiday","Dia Nacional de Zumbi e da Consciência Negra"]],"2026-11-21":[["recess","Recesso acadêmico"]],
+"2026-12-05":[["second","Fim das aulas anuais e 2º semestre"]],"2026-12-07":[["final","Avaliação final — 2º semestre e anuais, 7 a 12"]],"2026-12-08":[["final","Avaliação final"]],"2026-12-09":[["final","Avaliação final"]],"2026-12-10":[["final","Avaliação final"]],"2026-12-11":[["final","Avaliação final"]],"2026-12-12":[["final","Avaliação final"]],"2026-12-16":[["final","Implantação de notas da avaliação final — 2º semestre e anuais"]],"2026-12-25":[["holiday","Natal"]]
+};
+let currentYear=2026,selectedDate=formatDate(new Date(2026,2,9));const monthsEl=document.getElementById("months"),yearSelect=document.getElementById("yearSelect");
+function formatDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}function niceDate(s){const[y,m,d]=s.split("-");return `${d}/${m}/${y}`}function parseDate(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function eKey(s){return"uem-events-"+s}function fKey(s){return"uem-files-"+s}function getEvents(s){return JSON.parse(localStorage.getItem(eKey(s))||"[]")}function setEvents(s,v){localStorage.setItem(eKey(s),JSON.stringify(v))}function getFiles(s){return JSON.parse(localStorage.getItem(fKey(s))||"[]")}function setFiles(s,v){localStorage.setItem(fKey(s),JSON.stringify(v))}
+function uemItems(s){let arr=[...(UEM[s]||[])];let d=parseDate(s);if(d.getDay()==0)arr.unshift(["holiday","Domingo"]);return arr}
+function uemClass(s){let items=uemItems(s);if(items.some(x=>x[0]=="holiday"))return"uem-holiday";if(items.some(x=>x[0]=="recess"))return"uem-recess";if(items.some(x=>x[0]=="vac"))return"uem-vac";if(items.some(x=>x[0]=="final"))return"uem-final";if(items.some(x=>x[0]=="second"))return"uem-second";if(items.some(x=>x[0]=="class"))return"uem-class";return""}
+function setupYears(){[2026,2027,2028].forEach(y=>{let o=document.createElement("option");o.value=y;o.textContent=y;if(y==2026)o.selected=true;yearSelect.appendChild(o)});yearSelect.onchange=()=>{currentYear=+yearSelect.value;renderCalendar()}}
+function renderCalendar(){monthsEl.innerHTML="";for(let m=0;m<12;m++){let box=document.createElement("div");box.className="month";box.innerHTML=`<h2>${monthNames[m]} <span class="badge">${currentYear}</span></h2>`;let wd=document.createElement("div");wd.className="weekdays";weekDays.forEach(w=>{let x=document.createElement("div");x.textContent=w;wd.appendChild(x)});box.appendChild(wd);let days=document.createElement("div");days.className="days";let first=new Date(currentYear,m,1).getDay(),total=new Date(currentYear,m+1,0).getDate();for(let i=0;i<first;i++){let b=document.createElement("button");b.className="day empty";b.disabled=true;days.appendChild(b)}for(let d=1;d<=total;d++){let s=formatDate(new Date(currentYear,m,d)),b=document.createElement("button");b.className="day "+uemClass(s);b.textContent=d;if(s==formatDate(new Date()))b.classList.add("today");if(getEvents(s).length||getFiles(s).length)b.classList.add("has-event");b.onclick=()=>selectDate(s);days.appendChild(b)}box.appendChild(days);monthsEl.appendChild(box)}renderWeek()}
+function selectDate(s){selectedDate=s;selectedDateText.textContent="Dia selecionado: "+niceDate(s);eventTitle.value="";eventTime.value="";eventNotes.value="";renderUemDay();renderEvents();renderFiles();renderWeek()}
+function renderUemDay(){uemDayInfo.innerHTML="";let arr=uemItems(selectedDate);if(!arr.length){uemDayInfo.innerHTML='<div class="item"><strong>Dia letivo sem evento especial UEM cadastrado.</strong></div>';return}arr.forEach(x=>{let div=document.createElement("div");div.className="item uem";div.innerHTML=`<strong>UEM: ${x[1]}</strong><small>${niceDate(selectedDate)}</small>`;uemDayInfo.appendChild(div)})}
+function saveEvent(){let title=eventTitle.value.trim(),time=eventTime.value,notes=eventNotes.value.trim();if(!title){alert("Digite um título.");return}let ev=getEvents(selectedDate);ev.push({id:Date.now(),title,time,notes});setEvents(selectedDate,ev);renderEvents();renderCalendar();robotSay("Salvei seu compromisso respeitando o dia do calendário UEM.")}
+function renderEvents(){eventList.innerHTML="";let ev=getEvents(selectedDate);if(!ev.length){eventList.innerHTML='<div class="item"><strong>Nenhum compromisso pessoal.</strong></div>';return}ev.forEach(x=>{let div=document.createElement("div");div.className="item";div.innerHTML=`<strong>${x.title}</strong><small>${x.time||"Sem horário"} • ${niceDate(selectedDate)}</small>${x.notes?'<p>'+x.notes+'</p>':''}<br><button class="tiny" onclick="deleteEvent(${x.id})">Excluir</button>`;eventList.appendChild(div)})}
+function deleteEvent(id){setEvents(selectedDate,getEvents(selectedDate).filter(x=>x.id!=id));renderEvents();renderCalendar()}
+function weekDates(ref){let d=new Date(ref),start=new Date(d);start.setDate(d.getDate()-d.getDay());return Array.from({length:7},(_,i)=>{let x=new Date(start);x.setDate(start.getDate()+i);return formatDate(x)})}
+function renderWeek(){let dates=weekDates(parseDate(selectedDate));weekRange.textContent=`${niceDate(dates[0])} a ${niceDate(dates[6])}`;weekList.innerHTML="";let count=0;dates.forEach(s=>{uemItems(s).forEach(u=>{count++;let div=document.createElement("div");div.className="item uem";div.innerHTML=`<strong>UEM — ${niceDate(s)}</strong><small>${u[1]}</small>`;weekList.appendChild(div)});getEvents(s).forEach(e=>{count++;let div=document.createElement("div");div.className="item";div.innerHTML=`<strong>${niceDate(s)} — ${e.title}</strong><small>${e.time||"Sem horário"}</small>${e.notes?'<p>'+e.notes+'</p>':''}`;weekList.appendChild(div)})});if(!count)weekList.innerHTML='<div class="item"><strong>Semana sem evento especial cadastrado.</strong></div>'}
+function goToday(){let t=new Date();currentYear=t.getFullYear();if(![2026,2027,2028].includes(currentYear))currentYear=2026;yearSelect.value=currentYear;renderCalendar();selectDate(formatDate(new Date(2026,2,9)))}
+function saveFiles(){let files=[...fileInput.files];if(!files.length){alert("Escolha arquivos.");return}let saved=getFiles(selectedDate),done=0;files.forEach(file=>{let r=new FileReader();r.onload=()=>{saved.push({id:String(Date.now()+Math.random()),name:file.name,size:file.size,data:r.result});done++;if(done==files.length){setFiles(selectedDate,saved);fileInput.value="";renderFiles();renderCalendar();robotSay("Arquivos salvos no dia "+niceDate(selectedDate)+".")}};r.readAsDataURL(file)})}
+function renderFiles(){fileList.innerHTML="";let files=getFiles(selectedDate);if(!files.length){fileList.innerHTML='<div class="item"><strong>Nenhum arquivo anexado.</strong></div>';return}files.forEach(f=>{let div=document.createElement("div");div.className="item";div.innerHTML=`<strong>${f.name}</strong><small>${Math.round(f.size/1024)} KB</small><br><a href="${f.data}" download="${f.name}">Abrir/Baixar</a><br><button class="tiny" onclick="deleteFile('${f.id}')">Excluir</button>`;fileList.appendChild(div)})}
+function deleteFile(id){setFiles(selectedDate,getFiles(selectedDate).filter(f=>f.id!=id));renderFiles();renderCalendar()}function generatePDF(){renderWeek();window.print()}
+let calc="",calcDisplay=document.getElementById("calcDisplay");function up(){calcDisplay.value=calc?calc:"0"}function calcPress(v){calc+=v;up()}function calcClear(){calc="";up()}function calcBack(){calc=calc.slice(0,-1);up()}function calcEqual(){try{if(!/^[0-9+\-*/.() ]+$/.test(calc))throw Error();calc=String(Function('"use strict";return('+calc+')')());up()}catch(e){calcDisplay.value="Erro";calc=""}}
+const chatbox=document.getElementById("chatbox"),chatInput=document.getElementById("chatInput");function addMsg(t,w="bot"){let d=document.createElement("div");d.className="msg "+w;d.textContent=t;chatbox.appendChild(d);chatbox.scrollTop=chatbox.scrollHeight}function robotSay(t){addMsg(t,"bot")}
+function weekSummary(){let txt=[];weekDates(parseDate(selectedDate)).forEach(s=>{uemItems(s).forEach(u=>txt.push(`${niceDate(s)} UEM: ${u[1]}`));getEvents(s).forEach(e=>txt.push(`${niceDate(s)} ${e.time||""}: ${e.title}`))});return txt.length?txt.join("; "):"Não há eventos na semana selecionada."}
+function botReply(t){t=t.toLowerCase();if(t.includes("semana")||t.includes("compromisso"))return weekSummary();if(t.includes("uem")||t.includes("hoje")||t.includes("calend")){let a=uemItems(selectedDate);return a.length?a.map(x=>"UEM: "+x[1]).join("; "):"Neste dia não há evento especial UEM cadastrado."}if(t.includes("direito"))return"Organize juridicamente: fato, prova, norma, prazo, competência, dano e pedido. Posso ajudar na estrutura, sem substituir advogado.";if(t.includes("espirit"))return"Reflexão espírita: serenidade, caridade e responsabilidade. Acolher não significa aceitar injustiça; aja com prudência.";return"Estou aqui. Posso mostrar a semana UEM, o dia UEM, compromissos, reflexão ou estrutura jurídica."}
+function sendChat(){let v=chatInput.value.trim();if(!v)return;addMsg(v,"user");chatInput.value="";setTimeout(()=>robotSay(botReply(v)),100)}function quickChat(v){chatInput.value=v;sendChat()}chatInput.addEventListener("keydown",e=>{if(e.key=="Enter")sendChat()})
+function installHint(){alert("No tablet: abrir no navegador, menu ou compartilhar, Adicionar à tela inicial.")}if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));
+setupYears();renderCalendar();selectDate(selectedDate);robotSay("Pronto. Agora eu respeito o Calendário Acadêmico UEM 2026 de Maringá e alerto a semana.")
+</script></body></html>
